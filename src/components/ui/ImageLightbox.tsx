@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { X } from 'lucide-react';
 
 interface ImageLightboxProps {
@@ -8,21 +8,32 @@ interface ImageLightboxProps {
 }
 
 export const ImageLightbox: React.FC<ImageLightboxProps> = ({ src, alt, onClose }) => {
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
+
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4 animate-fade-in"
       onClick={onClose}
     >
-      <div className="relative max-w-3xl max-h-[90vh]" onClick={e => e.stopPropagation()}>
-        <button
-          onClick={onClose}
-          className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
-          aria-label="Close lightbox"
-        >
-          <X size={32} />
-        </button>
-        <img src={src} alt={alt} className="w-full h-auto object-cover rounded-lg" />
-      </div>
+      <button
+        onClick={onClose}
+        className="absolute top-6 right-6 text-white hover:text-gray-300 transition-colors z-10"
+        aria-label="Close"
+      >
+        <X size={32} />
+      </button>
+      <img
+        src={src}
+        alt={alt}
+        className="max-w-full max-h-screen object-contain"
+        onClick={(e) => e.stopPropagation()}
+      />
     </div>
   );
 };
